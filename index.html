@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>MR Confecciones | Mantelería y Microfibra de Calidad</title>
+    <meta name="description"
+        content="Especialistas en la confección de manteles, turbantes y toallas de microfibra premium. Calidad y durabilidad para tu hogar o institución.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#9a4c2e",      /* Terracota/Arcilla */
+                        "earth-sand": "#c5a386",   /* Arena/Beige */
+                        "earth-moss": "#5d6d4f",   /* Verde Musgo */
+                        "navy-blue": "#2d241e",    /* Café Oscuro Profundo (replaces navy) */
+                        "cyan-accent": "#c5a386",  /* Sand (replaces cyan as accent) */
+                        "background-dark": "#1c1614", /* Un tono más claro que el anterior (#120d0b) */
+                        "glass": "rgba(255, 248, 240, 0.02)",
+                        "glass-border": "rgba(255, 248, 240, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-glow {
+            background: radial-gradient(circle at center, rgba(154, 76, 46, 0.15) 0%, transparent 70%);
+        }
+
+        @keyframes rotate-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .rotate-animation {
+            animation: rotate-slow 20s linear infinite;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        #cart-sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+
+        #cart-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .cart-overlay {
+            display: none;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 40;
+        }
+
+        .cart-overlay.open {
+            display: block;
+        }
+
+        .nav-scrolled {
+            background: rgba(28, 22, 20, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #9a4c2e 0%, #c5a386 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-background-dark text-white transition-colors duration-300 overflow-x-hidden">
+
+    <!-- Ambient Background Effects -->
+    <div
+        class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full z-0 pointer-events-none">
+    </div>
+    <div
+        class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-earth-moss/10 blur-[150px] rounded-full z-0 pointer-events-none">
+    </div>
+
+    <div class="relative z-10">
+        <!-- Navigation -->
+        <header
+            class="sticky top-0 z-50 transition-all duration-300 px-6 lg:px-20 py-6 bg-background-dark/30 backdrop-blur-sm"
+            id="main-header">
+            <nav class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-4 cursor-pointer"
+                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div
+                        class="w-14 h-14 bg-white rounded-full p-1 flex items-center justify-center overflow-hidden shadow-lg border-2 border-primary/30">
+                        <img src="assets/logo-circular.png" alt="MR Logo" class="w-full h-full object-contain"
+                            onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=MR'">
+                    </div>
+                    <div class="flex flex-col -gap-1">
+                        <h2 class="text-white text-xl font-extrabold tracking-tighter leading-none">MR</h2>
+                        <span class="text-[10px] font-bold tracking-widest text-primary uppercase">Confecciones</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-10">
+                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
+                        href="#shop">Colecciones</a>
+                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
+                        href="#about">Experiencia</a>
+                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
+                        href="#contact">Cotizar</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="open-cart"
+                        class="relative p-2.5 hover:bg-white/10 rounded-full transition-all border border-white/5">
+                        <span class="material-symbols-outlined text-2xl">shopping_bag</span>
+                        <span id="cart-count"
+                            class="absolute top-1 right-1 w-4 h-4 bg-primary text-[10px] flex items-center justify-center rounded-full text-white font-bold">0</span>
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Carousel Section -->
+        <section id="hero-carousel" class="relative h-[90vh] w-full overflow-hidden">
+            <!-- Carousel Content -->
+            <div id="carousel-inner" class="relative h-full w-full">
+                <!-- Slides will be injected by JS -->
+                <div id="carousel-slides" class="h-full w-full flex transition-transform duration-700 ease-in-out">
+                    <!-- Slides content here -->
+                </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <div class="absolute inset-0 z-20 flex items-center justify-between px-6 lg:px-20 pointer-events-none">
+                <button id="prev-slide"
+                    class="p-4 rounded-full glass-card hover:bg-primary text-white pointer-events-auto transition-all group">
+                    <span
+                        class="material-symbols-outlined text-3xl group-active:scale-90 transition-transform">west</span>
+                </button>
+                <button id="next-slide"
+                    class="p-4 rounded-full glass-card hover:bg-primary text-white pointer-events-auto transition-all group">
+                    <span
+                        class="material-symbols-outlined text-3xl group-active:scale-90 transition-transform">east</span>
+                </button>
+            </div>
+
+            <!-- Carousel Indicators -->
+            <div id="carousel-dots" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+                <!-- Dots injected by JS -->
+            </div>
+
+            <!-- Ambient Overlay -->
+            <div
+                class="absolute inset-0 bg-gradient-to-b from-transparent via-background-dark/20 to-background-dark z-10">
+            </div>
+        </section>
+
+        <!-- Key Categories -->
+        <section id="categories" class="py-32 px-6 lg:px-20 relative">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] border-white/5 hover:border-primary/30 transition-all group">
+                    <div
+                        class="w-16 h-16 bg-navy-blue rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-3xl text-primary">table_restaurant</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Mantelería</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">Diseños exclusivos para instituciones y
+                        hogar, resistentes y elegantes.</p>
+                    <div class="h-1 w-12 bg-primary rounded-full"></div>
+                </div>
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] border-white/5 hover:border-primary/30 transition-all group">
+                    <div
+                        class="w-16 h-16 bg-navy-blue rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-3xl text-primary">face_2</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Turbantes</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">Microfibra de secado ultra-rápido, suave con
+                        el cabello y ajustable.</p>
+                    <div class="h-1 w-12 bg-primary rounded-full"></div>
+                </div>
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] border-white/5 hover:border-cyan-accent/30 transition-all group">
+                    <div
+                        class="w-16 h-16 bg-navy-blue rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-3xl text-cyan-accent">dry_cleaning</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Toallas</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">Microfibra premium de alta absorción para
+                        deporte y uso diario.</p>
+                    <div class="h-1 w-12 bg-cyan-accent rounded-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shop / Product Grid -->
+        <section id="shop" class="py-32 px-6 lg:px-20 bg-white/[0.02]">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                    <div class="space-y-4">
+                        <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px]">Catálogo
+                            2026</span>
+                        <h2 class="text-5xl font-black tracking-tighter">NUESTRA <span
+                                class="text-primary">COLECCIÓN</span></h2>
+                    </div>
+                    <div class="flex bg-navy-blue p-1.5 rounded-2xl border border-white/5">
+                        <button
+                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl bg-primary text-white">Todos</button>
+                        <button
+                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl hover:text-earth-sand transition-colors">Manteles</button>
+                        <button
+                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl hover:text-earth-sand transition-colors">Microfibra</button>
+                    </div>
+                </div>
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <!-- JS dynamic injection -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About / Value Proposition -->
+        <section id="about" class="py-32 px-6 lg:px-20 overflow-hidden">
+            <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-navy-blue to-primary rounded-[2rem] flex items-center justify-center mb-10 rotate-12 rotate-animation">
+                    <span class="material-symbols-outlined text-5xl text-white">factory</span>
+                </div>
+                <h2 class="text-5xl font-black tracking-tight mb-8">CONFECCIÓN POR <span
+                        class="text-primary italic">EXPERTOS</span></h2>
+                <p class="text-slate-400 text-xl max-w-2xl leading-relaxed mb-16">
+                    En MR Confecciones nos apasiona la excelencia textil. Utilizamos microfibra
+                    certificada y
+                    técnicas de confección reforzada para asegurar que cada producto sea una inversión en durabilidad.
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-12 w-full max-w-4xl">
+                    <div class="space-y-2">
+                        <span class="text-4xl font-black text-earth-sand">100%</span>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Nacional</p>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-4xl font-black text-primary">Micro</span>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Fibra Premium</p>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-4xl font-black text-white">+500</span>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Clientes</p>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-4xl font-black text-earth-sand">TOP</span>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Diseños</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="py-32 px-6 lg:px-20">
+            <div
+                class="max-w-5xl mx-auto glass-card rounded-[3.5rem] p-12 lg:p-24 border-primary/10 relative overflow-hidden text-center">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
+                <h2 class="text-5xl font-black tracking-tight mb-6">¿NECESITAS UNA <span
+                        class="text-primary underline decoration-earth-sand underline-offset-8">COTIZACIÓN?</span></h2>
+                <p class="text-slate-400 text-lg mb-12">Cuéntanos sobre tu pedido institucional o personalizado.</p>
+
+                <form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div class="space-y-3">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Nombre</label>
+                        <input name="name"
+                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all"
+                            placeholder="Mauricio R." type="text" required />
+                    </div>
+                    <div class="space-y-3">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Email</label>
+                        <input name="email"
+                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all"
+                            placeholder="mr@contacto.cl" type="email" required />
+                    </div>
+                    <div class="space-y-3 md:col-span-2">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Requerimiento</label>
+                        <textarea name="message"
+                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all min-h-[150px]"
+                            placeholder="Ej: Cotización por 50 manteles bordados..." required></textarea>
+                    </div>
+                    <button type="submit"
+                        class="md:col-span-2 btn-gradient text-white font-black py-5 rounded-2xl transition-all shadow-xl hover:scale-[1.02] flex items-center justify-center gap-3">
+                        ENVIAR MENSAJE
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-[#050b18] pt-24 pb-12 px-6 lg:px-20 border-t border-white/5">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 mb-20">
+                <div class="space-y-6 max-w-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white rounded-full p-1">
+                            <img src="assets/logo-circular.png" alt="MR Logo" class="w-full h-full object-contain">
+                        </div>
+                        <span class="font-black tracking-tighter text-xl">MR CONFECCIONES</span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Elevando el estándar de la confección textil chilena con tecnología de microfibra y atención al
+                        detalle.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-20">
+                    <div class="space-y-6">
+                        <h4 class="font-black text-xs uppercase tracking-widest text-primary">Navegación</h4>
+                        <ul class="space-y-4 text-slate-400 text-sm font-medium">
+                            <li><a class="hover:text-primary transition-colors" href="#shop">Tienda</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#about">Nosotros</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#contact">Ventas</a></li>
+                        </ul>
+                    </div>
+                    <div class="space-y-6">
+                        <h4 class="font-black text-xs uppercase tracking-widest text-primary">Información</h4>
+                        <ul class="space-y-4 text-slate-400 text-sm font-medium">
+                            <li><a class="hover:text-primary transition-colors" href="#">Envíos</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#">Pagos</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#">Privacidad</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="max-w-7xl mx-auto flex flex-col md:row items-center justify-between pt-10 border-t border-white/5 text-slate-600 text-[10px] font-bold uppercase tracking-widest gap-6">
+                <p>© 2026 MR Confecciones Chile. Diseño Premium Confeccionado con IA.</p>
+                <div class="flex gap-10">
+                    <a class="hover:text-white transition-colors" href="#">Instagram</a>
+                    <a class="hover:text-white transition-colors" href="#">Facebook</a>
+                    <a class="hover:text-white transition-colors" href="#">LinkedIn</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="cart-overlay fixed inset-0 z-[60]"></div>
+    <aside id="cart-sidebar"
+        class="fixed top-0 right-0 w-full max-w-md h-full bg-background-dark border-l border-white/5 z-[70] flex flex-col shadow-2xl">
+        <div class="p-8 border-b border-white/5 flex items-center justify-between bg-navy-blue/30">
+            <h3 class="text-2xl font-black tracking-tighter text-primary">TU COTIZACIÓN</h3>
+            <button id="close-cart" class="p-2 hover:bg-white/10 rounded-full transition-all">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-4 bg-background-dark">
+            <!-- JS injection -->
+        </div>
+        <div id="cart-footer" class="p-8 border-t border-white/5 bg-navy-blue/30 space-y-6" style="display: none;">
+            <div class="flex justify-between items-center text-xl font-bold">
+                <span class="text-slate-400">Total Neto</span>
+                <span id="cart-total" class="text-primary">$0</span>
+            </div>
+            <button id="checkout-btn"
+                class="w-full btn-gradient text-white font-black py-5 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3">
+                VERIFICAR DISPONIBILIDAD
+                <span class="material-symbols-outlined">whatsapp</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Toast -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] translate-y-20 opacity-0 transition-all duration-500">
+        <div
+            class="bg-navy-blue border border-primary/30 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-4 shadow-2xl">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-lg">check</span>
+            </div>
+            <span id="toast-msg">Agregado con éxito</span>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+    <script>
+        // Scroll interaction for nav
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                header.classList.add('nav-scrolled', 'shadow-2xl');
+                header.classList.remove('py-4');
+                header.classList.add('py-2');
+            } else {
+                header.classList.remove('nav-scrolled', 'shadow-2xl');
+                header.classList.add('py-4');
+                header.classList.remove('py-2');
+            }
+        });
+
+        // Simple reveal animation dummy for testing
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.glass-card').forEach(el => {
+            el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>
