@@ -22,22 +22,22 @@ const DESIGNER_CONFIG = {
             title: "MANTELERÍA INSTITUCIONAL",
             subtitle: "Elegancia y durabilidad para eventos y hogar.",
             btnText: "Ver Catálogo",
-            image: "https://images.unsplash.com/photo-1544006659-f0b21f04cb1b?auto=format&fit=crop&q=80&w=1920",
+            image: "assets/manteleria.png",
             tag: "Calidad Premium"
         },
         {
             title: "TURBANTES DE MICROFIBRA",
             subtitle: "Secado ultra rápido que cuida tu cabello.",
             btnText: "Comprar Ahora",
-            image: "https://images.unsplash.com/photo-1600100397561-eb074697368a?auto=format&fit=crop&q=80&w=1920",
+            image: "assets/turbante.png",
             tag: "Secado Rápido"
         },
         {
-            title: "TOALLAS DE ALTA ABSORCIÓN",
-            subtitle: "Tecnología textil para el uso diario y deportivo.",
-            btnText: "Cotizar Set",
-            image: "https://images.unsplash.com/photo-1540555700478-4be289fbecee?auto=format&fit=crop&q=80&w=1920",
-            tag: "100% Microfibra"
+            title: "CONFECCIÓN PERSONALIZADA",
+            subtitle: "Trabajos a medida con las mejores telas del mercado.",
+            btnText: "Cotizar Ahora",
+            image: "assets/hero-poncho.png",
+            tag: "Hecho a Mano"
         }
     ]
 };
@@ -66,23 +66,23 @@ const PRODUCTS = [
     },
     {
         id: 3,
-        name: "Toalla Deporte Microfibra",
-        description: "Toalla de secado rápido, compacta y ultra-absorbente. Ideal para gimnasio, natación o uso diario.",
+        name: "Telas Naranja Premium",
+        description: "Telas de alta calidad para confecciones especiales. Suavidad y resistencia garantizada.",
         price: 9990,
-        category: "Toallas",
+        category: "Telas",
         badge: "BEST SELLER",
         badgeClass: "bg-earth-moss",
-        image: "assets/towel-demo.png"
+        image: "assets/telas-naranja.png"
     },
     {
         id: 4,
-        name: "Set Microfibra Hogar",
-        description: "Incluye turbante y toalla de mano. Máxima suavidad y absorción garantizada.",
+        name: "Poncho Microfibra",
+        description: "Poncho ideal para playa o piscina. Secado rápido y máxima comodidad.",
         price: 14500,
-        category: "Packs",
+        category: "Protección",
         badge: "PROMO",
         badgeClass: "bg-primary",
-        image: "assets/pack-demo.png"
+        image: "assets/hero-poncho.png"
     }
 ];
 
