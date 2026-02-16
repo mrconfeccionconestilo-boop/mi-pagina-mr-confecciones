@@ -1,10 +1,14 @@
 /* =============================================
-   MR CONFECCIONES — Logic v2.1 (Security Fix)
+   MR CONFECCIONES — Logic v2.2 (Supabase + EmailJS)
    ============================================= */
 
 // --- CONFIGURATION ---
 const SUPABASE_URL = 'https://mrcroztqbiwytkcbbfsq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yY3JvenRxYml3eXRrY2JiZnNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTUxNzAsImV4cCI6MjA4Njc3MTE3MH0.Hm7iV_58dx9TysDTWnp7ZsoINCPi4YQLvoWX8Sl1TB4';
+
+// EmailJS Config
+const EMAILJS_SERVICE_ID = 'service_cpbelnt';
+const EMAILJS_TEMPLATE_ID = 'template_3uzu4by';
 
 const ASSETS = {
     manteleria: "assets/manteleria.png",
@@ -50,15 +54,14 @@ const PRODUCTS = [
 // --- Global State ---
 let cart = JSON.parse(localStorage.getItem('mr_confecciones_cart_real')) || [];
 let currentSlide = 0;
-let supabaseClient = null; // Renamed to avoid syntax collision
+let supabaseClient = null;
 let dom = {};
 
 // --- Core Functions ---
 
 function init() {
-    console.log("MR Confecciones: Aplicación cargada.");
+    console.log("MR Confecciones: Aplicación cargada v2.2.");
 
-    // Initializing DOM references
     dom = {
         productsGrid: document.getElementById('products-grid'),
         cartSidebar: document.getElementById('cart-sidebar'),
@@ -76,21 +79,14 @@ function init() {
         dots: document.getElementById('carousel-dots')
     };
 
-    // Initializing Supabase
     if (window.supabase) {
-        // Use the global SDK to create the client
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log("Supabase: Inicializado correctamente.");
-    } else {
-        console.warn("Supabase: SDK no encontrado, asegúrate de tener internet.");
     }
 
     renderCarousel();
     renderProducts();
     updateCartUI();
     setupListeners();
-
-    // Auto-play carousel
     setInterval(nextSlide, 6000);
 }
 
@@ -220,24 +216,20 @@ function showToast(msg) {
 }
 
 function setupListeners() {
-    // --- Cart Toggle ---
     if (dom.openCart) dom.openCart.onclick = () => { dom.cartSidebar.classList.add('open'); dom.cartOverlay.classList.add('open'); };
     if (dom.closeCart) dom.closeCart.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
     if (dom.cartOverlay) dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
 
-    // --- Contact Form ---
     if (dom.contactForm) {
-        console.log("Formulario: Listo.");
         dom.contactForm.onsubmit = async (e) => {
             e.preventDefault();
-            e.stopPropagation();
 
-            console.log("Formulario: Iniciando envío...");
             const btn = dom.contactForm.querySelector('button');
             const data = {
                 name: new FormData(dom.contactForm).get('name'),
                 email: new FormData(dom.contactForm).get('email'),
-                requirement: dom.contactForm.querySelector('textarea').value,
+                message: dom.contactForm.querySelector('textarea').value, // Use 'message' for EmailJS
+                requirement: dom.contactForm.querySelector('textarea').value, // Also keep 'requirement' for Supabase
                 created_at: new Date().toISOString()
             };
 
@@ -245,17 +237,30 @@ function setupListeners() {
             btn.textContent = "ENVIANDO...";
 
             try {
-                if (!supabaseClient) throw new Error("Base de datos desconectada.");
+                // 1. Save to Supabase
+                if (supabaseClient) {
+                    await supabaseClient.from('contact_messages').insert([{
+                        name: data.name,
+                        email: data.email,
+                        requirement: data.requirement,
+                        created_at: data.created_at
+                    }]);
+                }
 
-                const { error } = await supabaseClient.from('contact_messages').insert([data]);
-                if (error) throw error;
+                // 2. Send via EmailJS
+                if (window.emailjs) {
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        from_name: data.name,
+                        from_email: data.email,
+                        message: data.message
+                    });
+                }
 
-                console.log("Formulario: Éxito total.");
                 showToast("¡Mensaje enviado con éxito!");
                 dom.contactForm.reset();
             } catch (err) {
-                console.error("Formulario Error:", err);
-                showToast("Error: " + err.message);
+                console.error("Error:", err);
+                showToast("Error al enviar el mensaje.");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "ENVIAR MENSAJE";
@@ -264,7 +269,6 @@ function setupListeners() {
         };
     }
 
-    // --- Checkout ---
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.onclick = async () => {
@@ -292,7 +296,6 @@ function setupListeners() {
     }
 }
 
-// Start application
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
