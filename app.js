@@ -286,7 +286,7 @@ function setupListeners() {
                     }]);
                 }
                 const msg = `Hola MR Confecciones, cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
-                window.open(`https://wa.me/569XXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
+                window.open(`https://wa.me/56998745436?text=${encodeURIComponent(msg)}`, '_blank');
             } catch (err) {
                 console.error("Checkout Error:", err);
             } finally {
