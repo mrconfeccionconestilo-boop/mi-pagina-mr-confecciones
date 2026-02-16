@@ -95,15 +95,24 @@ function updateCarousel() {
 function renderProducts() {
     if (!dom.productsGrid) return;
     dom.productsGrid.innerHTML = PRODUCTS.map(p => `
-        <div class="glass-card p-6 rounded-[2rem] flex flex-col h-full hover:border-primary/50 transition-all duration-500">
-            <div class="relative overflow-hidden rounded-2xl mb-8 aspect-[4/5] bg-navy-blue"><img src="${p.image}" class="w-full h-full object-cover opacity-90" onerror="this.src='https://via.placeholder.com/400x500'"><span class="absolute top-4 left-4 ${p.badgeClass} text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">${p.badge}</span></div>
-            <div class="flex flex-col flex-grow">
-                <span class="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">${p.category}</span>
-                <h3 class="text-2xl font-black mb-2 tracking-tighter">${p.name}</h3>
-                <p class="text-slate-400 text-sm line-clamp-2">${p.description}</p>
-                <div class="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
-                    <span class="text-2xl font-black">$${p.price.toLocaleString('es-CL')}</span>
-                    <button onclick="addToCart(${p.id})" class="w-12 h-12 bg-white/5 hover:bg-primary rounded-xl transition-all flex items-center justify-center border border-white/10"><span class="material-symbols-outlined">add_shopping_cart</span></button>
+        <div class="glass-card p-6 rounded-[2.5rem] flex flex-col h-full hover:border-primary/50 transition-all duration-700 group">
+            <div class="relative overflow-hidden rounded-[2rem] mb-8 aspect-[4/5] bg-navy-blue product-image-container">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/400x500'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] shadow-2xl">${p.badge}</span>
+            </div>
+            <div class="flex flex-col flex-grow px-2">
+                <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-3">${p.category}</span>
+                <h3 class="text-2xl font-black mb-3 tracking-tighter luxury-text-gradient">${p.name}</h3>
+                <p class="text-slate-500 text-xs font-medium leading-relaxed line-clamp-2">${p.description}</p>
+                <div class="mt-auto flex items-center justify-between pt-8">
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-extrabold text-slate-600 uppercase tracking-widest mb-1">Inversión</span>
+                        <span class="text-2xl font-black tracking-tight">$${p.price.toLocaleString('es-CL')}</span>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="w-14 h-14 bg-white/[0.03] hover:bg-primary text-white rounded-2xl transition-all duration-500 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_30px_rgba(176,93,60,0.3)] group/btn">
+                        <span class="material-symbols-outlined text-2xl transition-transform group-hover/btn:scale-110">add_shopping_cart</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -121,10 +130,29 @@ function updateCartUI() {
     if (!dom.cartCount) return;
     dom.cartCount.textContent = cart.reduce((s, i) => s + i.quantity, 0);
     if (cart.length === 0) {
-        dom.cartItems.innerHTML = '<p class="text-center py-10 opacity-40">Carrito vacío</p>';
+        dom.cartItems.innerHTML = `
+            <div class="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-20 py-20">
+                <span class="material-symbols-outlined text-6xl">inventory_2</span>
+                <p class="text-[10px] font-black uppercase tracking-[0.4em]">Sin artículos seleccionados</p>
+            </div>`;
         dom.cartFooter.style.display = 'none';
     } else {
-        dom.cartItems.innerHTML = cart.map(i => `<div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl"><img src="${i.image}" class="w-12 h-12 rounded-lg object-cover"><div class="flex-1"><h4 class="text-xs font-bold uppercase truncate">${i.name}</h4><p class="text-primary font-bold">$${(i.price * i.quantity).toLocaleString('es-CL')}</p></div><div class="flex items-center gap-2"><button onclick="updateQty(${i.id}, -1)" class="w-6 h-6 bg-white/5 rounded">-</button><span class="text-xs font-bold">${i.quantity}</span><button onclick="updateQty(${i.id}, 1)" class="w-6 h-6 bg-white/5 rounded">+</button></div></div>`).join('');
+        dom.cartItems.innerHTML = cart.map(i => `
+            <div class="group relative flex items-center gap-6 p-4 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-primary/30 transition-all duration-500">
+                <div class="w-20 h-20 rounded-2xl overflow-hidden bg-navy-blue flex-shrink-0">
+                    <img src="${i.image}" class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="flex-1 space-y-1">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/90 truncate">${i.name}</h4>
+                    <p class="text-primary font-black tracking-tight italic">$${(i.price * i.quantity).toLocaleString('es-CL')}</p>
+                    <div class="flex items-center gap-3 pt-2">
+                        <button onclick="updateQty(${i.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white/5 hover:bg-primary rounded-md transition-all text-xs">-</button>
+                        <span class="text-[10px] font-black w-4 text-center">${i.quantity}</span>
+                        <button onclick="updateQty(${i.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white/5 hover:bg-primary rounded-md transition-all text-xs">+</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
         dom.cartTotal.textContent = `$${cart.reduce((s, i) => s + (i.price * i.quantity), 0).toLocaleString('es-CL')}`;
         dom.cartFooter.style.display = 'block';
     }

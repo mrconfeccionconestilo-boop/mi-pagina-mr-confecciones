@@ -152,6 +152,42 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        /* Custom Scrollbar for a Premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #b05d3c;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4b99b;
+        }
+
+        .product-image-container:hover img {
+            transform: scale(1.1);
+        }
+
+        .input-luxury {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-luxury:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #b05d3c;
+            outline: none;
+            box-shadow: 0 0 20px rgba(176, 93, 60, 0.1);
+        }
     </style>
 </head>
 
@@ -319,22 +355,34 @@
                     certificada y
                     técnicas de confección reforzada para asegurar que cada producto sea una inversión en durabilidad.
                 </p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-12 w-full max-w-4xl">
-                    <div class="space-y-2">
-                        <span class="text-4xl font-black text-earth-sand">100%</span>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Nacional</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl mt-20">
+                    <div
+                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
+                        <span class="text-5xl font-black text-earth-sand">100%</span>
+                        <p
+                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            Hecho en Chile</p>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-4xl font-black text-primary">Micro</span>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Fibra Premium</p>
+                    <div
+                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
+                        <span class="text-5xl font-black text-primary">Micro</span>
+                        <p
+                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            Fibra Premium</p>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-4xl font-black text-white">+500</span>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Clientes</p>
+                    <div
+                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
+                        <span class="text-5xl font-black text-white">+500</span>
+                        <p
+                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            Clientes</p>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-4xl font-black text-earth-sand">TOP</span>
-                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Diseños</p>
+                    <div
+                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
+                        <span class="text-5xl font-black text-earth-sand">TOP</span>
+                        <p
+                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            Diseños 2026</p>
                     </div>
                 </div>
             </div>
@@ -349,78 +397,83 @@
                         class="text-primary underline decoration-earth-sand underline-offset-8">COTIZACIÓN?</span></h2>
                 <p class="text-slate-400 text-lg mb-12">Cuéntanos sobre tu pedido institucional o personalizado.</p>
 
-                <form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
                     <div class="space-y-3">
-                        <label
-                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Nombre</label>
-                        <input name="name"
-                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all"
-                            placeholder="Mauricio R." type="text" required />
+                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Nombre
+                            Completo</label>
+                        <input name="name" class="w-full input-luxury px-8 py-5 text-white" placeholder="Mauricio R."
+                            type="text" required />
                     </div>
                     <div class="space-y-3">
-                        <label
-                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Email</label>
-                        <input name="email"
-                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all"
+                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Correo
+                            Electrónico</label>
+                        <input name="email" class="w-full input-luxury px-8 py-5 text-white"
                             placeholder="mr@contacto.cl" type="email" required />
                     </div>
                     <div class="space-y-3 md:col-span-2">
-                        <label
-                            class="text-[10px] font-black uppercase tracking-[0.2em] text-earth-sand ml-2">Requerimiento</label>
+                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Tu
+                            Requerimiento</label>
                         <textarea name="message"
-                            class="w-full bg-background-dark border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all min-h-[150px]"
-                            placeholder="Ej: Cotización por 50 manteles bordados..." required></textarea>
+                            class="w-full input-luxury px-8 py-6 text-white min-h-[180px] resize-none"
+                            placeholder="Ej: Necesito cotizar 100 manteles personalizados..." required></textarea>
                     </div>
                     <button type="submit"
-                        class="md:col-span-2 btn-gradient text-white font-black py-5 rounded-2xl transition-all shadow-xl hover:scale-[1.02] flex items-center justify-center gap-3">
+                        class="md:col-span-2 btn-gradient text-white font-black py-6 rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-4 text-xs tracking-[0.2em]">
                         ENVIAR MENSAJE
-                        <span class="material-symbols-outlined">send</span>
+                        <span class="material-symbols-outlined uppercase">send</span>
                     </button>
                 </form>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer class="bg-[#050b18] pt-24 pb-12 px-6 lg:px-20 border-t border-white/5">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 mb-20">
-                <div class="space-y-6 max-w-xs">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-white rounded-full p-1">
+        <footer class="bg-background-dark pt-32 pb-16 px-6 lg:px-20 border-t border-white/5 relative overflow-hidden">
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent">
+            </div>
+
+            <div
+                class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 mb-24 relative z-10">
+                <div class="space-y-8 max-w-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white rounded-full p-1.5 shadow-2xl">
                             <img src="assets/logo-circular.png" alt="MR Logo" class="w-full h-full object-contain">
                         </div>
-                        <span class="font-black tracking-tighter text-xl">MR CONFECCIONES</span>
+                        <span class="font-black tracking-tighter text-2xl luxury-text-gradient">MR CONFECCIONES</span>
                     </div>
-                    <p class="text-slate-500 text-sm leading-relaxed">
-                        Elevando el estándar de la confección textil chilena con tecnología de microfibra y atención al
-                        detalle.
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                        Elevando el estándar de la confección textil con tecnología y pasión. Hecho a mano, diseñado
+                        para durar y destacar en cada detalle.
                     </p>
                 </div>
+
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-20">
-                    <div class="space-y-6">
-                        <h4 class="font-black text-xs uppercase tracking-widest text-primary">Navegación</h4>
-                        <ul class="space-y-4 text-slate-400 text-sm font-medium">
-                            <li><a class="hover:text-primary transition-colors" href="#shop">Tienda</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#about">Nosotros</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#contact">Ventas</a></li>
+                    <div class="space-y-8">
+                        <h4 class="font-black text-[10px] uppercase tracking-[0.4em] text-primary">Compañía</h4>
+                        <ul class="space-y-5 text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                            <li><a class="hover:text-white transition-colors" href="#shop">Tienda</a></li>
+                            <li><a class="hover:text-white transition-colors" href="#about">Nosotros</a></li>
+                            <li><a class="hover:text-white transition-colors" href="#contact">Contacto</a></li>
                         </ul>
                     </div>
-                    <div class="space-y-6">
-                        <h4 class="font-black text-xs uppercase tracking-widest text-primary">Información</h4>
-                        <ul class="space-y-4 text-slate-400 text-sm font-medium">
-                            <li><a class="hover:text-primary transition-colors" href="#">Envíos</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Pagos</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Privacidad</a></li>
+                    <div class="space-y-8">
+                        <h4 class="font-black text-[10px] uppercase tracking-[0.4em] text-primary">Información</h4>
+                        <ul class="space-y-5 text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                            <li><a class="hover:text-white transition-colors" href="#">Envíos</a></li>
+                            <li><a class="hover:text-white transition-colors" href="#">Términos</a></li>
+                            <li><a class="hover:text-white transition-colors" href="#">Privacidad</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
+
             <div
-                class="max-w-7xl mx-auto flex flex-col md:row items-center justify-between pt-10 border-t border-white/5 text-slate-600 text-[10px] font-bold uppercase tracking-widest gap-6">
-                <p>© 2026 MR Confecciones Chile. Diseño Premium Confeccionado con IA.</p>
-                <div class="flex gap-10">
-                    <a class="hover:text-white transition-colors" href="#">Instagram</a>
-                    <a class="hover:text-white transition-colors" href="#">Facebook</a>
-                    <a class="hover:text-white transition-colors" href="#">LinkedIn</a>
+                class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] gap-8 relative z-10">
+                <p>© 2026 MR CONFECCIONES CHILE. CRAFTED WITH EXCELLENCE.</p>
+                <div class="flex gap-12">
+                    <a class="hover:text-primary transition-colors" href="#">Instagram</a>
+                    <a class="hover:text-primary transition-colors" href="#">Facebook</a>
+                    <a class="hover:text-primary transition-colors" href="#">WhatsApp</a>
                 </div>
             </div>
         </footer>
@@ -429,25 +482,29 @@
     <!-- Cart Sidebar -->
     <div id="cart-overlay" class="cart-overlay fixed inset-0 z-[60]"></div>
     <aside id="cart-sidebar"
-        class="fixed top-0 right-0 w-full max-w-md h-full bg-background-dark border-l border-white/5 z-[70] flex flex-col shadow-2xl">
-        <div class="p-8 border-b border-white/5 flex items-center justify-between bg-navy-blue/30">
-            <h3 class="text-2xl font-black tracking-tighter text-primary">TU COTIZACIÓN</h3>
-            <button id="close-cart" class="p-2 hover:bg-white/10 rounded-full transition-all">
-                <span class="material-symbols-outlined">close</span>
+        class="fixed top-0 right-0 w-full max-w-md h-full bg-background-dark/95 backdrop-blur-3xl border-l border-white/5 z-[70] flex flex-col shadow-[-50px_0_100px_rgba(0,0,0,0.5)]">
+        <div class="p-10 border-b border-white/5 flex items-center justify-between">
+            <div class="space-y-1">
+                <h3 class="text-3xl font-black tracking-tighter luxury-text-gradient uppercase">Tu Compra</h3>
+                <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Premium Selection</p>
+            </div>
+            <button id="close-cart"
+                class="w-12 h-12 flex items-center justify-center hover:bg-white/5 rounded-full transition-all border border-white/10 group">
+                <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">close</span>
             </button>
         </div>
-        <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-4 bg-background-dark">
-            <!-- JS injection -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-10 space-y-6">
+            <!-- JS dynamic content -->
         </div>
-        <div id="cart-footer" class="p-8 border-t border-white/5 bg-navy-blue/30 space-y-6" style="display: none;">
-            <div class="flex justify-between items-center text-xl font-bold">
-                <span class="text-slate-400">Total Neto</span>
-                <span id="cart-total" class="text-primary">$0</span>
+        <div id="cart-footer" class="p-10 bg-white/[0.02] border-t border-white/5 space-y-8" style="display: none;">
+            <div class="flex justify-between items-center px-2">
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Total Estimado</span>
+                <span id="cart-total" class="text-3xl font-black">$0</span>
             </div>
             <button id="checkout-btn"
-                class="w-full btn-gradient text-white font-black py-5 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3">
-                VERIFICAR DISPONIBILIDAD
-                <span class="material-symbols-outlined">whatsapp</span>
+                class="w-full btn-gradient text-white font-black py-6 rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-4 text-xs tracking-[0.3em] uppercase">
+                SOLICITAR DISPONIBILIDAD
+                <span class="material-symbols-outlined text-xl">brand_awareness</span>
             </button>
         </div>
     </aside>
