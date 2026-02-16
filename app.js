@@ -347,41 +347,53 @@ function setupEventListeners() {
 
     // --- Contact Form (Supabase) ---
     if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
+        // Remove any existing listeners to be safe
+        const newForm = contactForm.cloneNode(true);
+        contactForm.parentNode.replaceChild(newForm, contactForm);
+
+        newForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = contactForm.querySelector('button');
+            e.stopPropagation();
+
+            console.log("Iniciando envío de formulario...");
+            const btn = newForm.querySelector('button');
             const originalText = btn.innerHTML;
-            const formData = new FormData(contactForm);
+            const formData = new FormData(newForm);
 
             const data = {
                 name: formData.get('name'),
                 email: formData.get('email'),
-                requirement: contactForm.querySelector('textarea').value,
-                created_at: new Date()
+                requirement: newForm.querySelector('textarea').value,
+                created_at: new Date().toISOString()
             };
 
             btn.disabled = true;
             btn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">sync</span> ENVIANDO...';
 
-            if (supabase) {
-                try {
-                    const { error } = await supabase.from('contact_messages').insert([data]);
-                    if (error) throw error;
-                    showToast(`¡Gracias ${data.name}! Mensaje enviado.`);
-                    contactForm.reset();
-                } catch (err) {
-                    console.error('Supabase error:', err);
-                    showToast('Error al enviar. Intenta de nuevo.');
+            try {
+                if (!supabase) {
+                    console.log("Supabase no inicializado, usando modo demo");
+                    setTimeout(() => {
+                        showToast(`¡Gracias ${data.name}! (Modo Demo)`);
+                        newForm.reset();
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }, 1000);
+                    return;
                 }
-            } else {
-                setTimeout(() => {
-                    showToast(`¡Gracias ${data.name}! (Modo Demo)`);
-                    contactForm.reset();
-                }, 1000);
-            }
 
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+                const { error } = await supabase.from('contact_messages').insert([data]);
+                if (error) throw error;
+
+                showToast(`¡Gracias ${data.name}! Mensaje enviado.`);
+                newForm.reset();
+            } catch (err) {
+                console.error('Error detallado:', err);
+                showToast('Error al enviar: ' + (err.message || 'Intenta de nuevo'));
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         });
     }
 
