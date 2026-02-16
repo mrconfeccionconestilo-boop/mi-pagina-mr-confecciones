@@ -1,13 +1,11 @@
 /* =============================================
-   MR CONFECCIONES — E-Commerce Logic (Official)
+   MR CONFECCIONES — Logic v2.0 (Official)
    ============================================= */
 
-// --- SUPABASE CONFIGURATION ---
+// --- CONFIGURATION ---
 const SUPABASE_URL = 'https://mrcroztqbiwytkcbbfsq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yY3JvenRxYml3eXRrY2JiZnNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTUxNzAsImV4cCI6MjA4Njc3MTE3MH0.Hm7iV_58dx9TysDTWnp7ZsoINCPi4YQLvoWX8Sl1TB4';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-// --- Image Assets Mapping ---
 const ASSETS = {
     manteleria: "assets/manteleria.png",
     turbante: "assets/turbante.png",
@@ -49,14 +47,18 @@ const PRODUCTS = [
     { id: 4, name: "Poncho Microfibra", description: "Ideal para playa o piscina. Máxima comodidad.", price: 14500, category: "Protección", badge: "PROMO", badgeClass: "bg-primary", image: ASSETS.poncho }
 ];
 
-// --- State ---
+// --- Global State ---
 let cart = JSON.parse(localStorage.getItem('mr_confecciones_cart_real')) || [];
 let currentSlide = 0;
-
-// --- DOM Elements ---
+let supabase = null;
 let dom = {};
 
+// --- Core Functions ---
+
 function init() {
+    console.log("MR Confecciones: Iniciando aplicación...");
+
+    // Initializing DOM references
     dom = {
         productsGrid: document.getElementById('products-grid'),
         cartSidebar: document.getElementById('cart-sidebar'),
@@ -74,10 +76,20 @@ function init() {
         dots: document.getElementById('carousel-dots')
     };
 
+    // Initializing Supabase
+    if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("Supabase: Cliente conectado.");
+    } else {
+        console.error("Supabase: SDK no encontrado en el navegador.");
+    }
+
     renderCarousel();
     renderProducts();
     updateCartUI();
     setupListeners();
+
+    // Auto-play carousel
     setInterval(nextSlide, 6000);
 }
 
@@ -106,7 +118,9 @@ function renderCarousel() {
         </div>
     `).join('');
 
-    dom.dots.innerHTML = DESIGNER_CONFIG.heroBanners.map((_, i) => `<button onclick="goToSlide(${i})" class="w-3 h-3 rounded-full transition-all ${i === 0 ? 'bg-primary w-10' : 'bg-white/20'}"></button>`).join('');
+    if (dom.dots) {
+        dom.dots.innerHTML = DESIGNER_CONFIG.heroBanners.map((_, i) => `<button onclick="goToSlide(${i})" class="w-3 h-3 rounded-full transition-all ${i === 0 ? 'bg-primary w-10' : 'bg-white/20'}"></button>`).join('');
+    }
 }
 
 window.goToSlide = (i) => { currentSlide = i; updateCarousel(); };
@@ -116,10 +130,12 @@ window.prevSlide = () => { currentSlide = (currentSlide - 1 + DESIGNER_CONFIG.he
 function updateCarousel() {
     if (!dom.slides) return;
     dom.slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-    const dotsArray = dom.dots.querySelectorAll('button');
-    dotsArray.forEach((dot, i) => {
-        dot.className = `w-3 h-3 rounded-full transition-all ${i === currentSlide ? 'bg-primary w-10' : 'bg-white/20'}`;
-    });
+    if (dom.dots) {
+        const dotsArray = dom.dots.querySelectorAll('button');
+        dotsArray.forEach((dot, i) => {
+            dot.className = `w-3 h-3 rounded-full transition-all ${i === currentSlide ? 'bg-primary w-10' : 'bg-white/20'}`;
+        });
+    }
 }
 
 function renderProducts() {
@@ -192,29 +208,35 @@ window.updateQty = (id, delta) => {
 function saveCart() { localStorage.setItem('mr_confecciones_cart_real', JSON.stringify(cart)); }
 
 function showToast(msg) {
-    if (!dom.toast) return;
+    if (!dom.toast || !dom.toastMsg) return;
     dom.toastMsg.textContent = msg;
     dom.toast.classList.replace('opacity-0', 'opacity-100');
     dom.toast.classList.replace('translate-y-20', 'translate-y-0');
     setTimeout(() => {
         dom.toast.classList.replace('opacity-100', 'opacity-0');
         dom.toast.classList.replace('translate-y-0', 'translate-y-20');
-    }, 3000);
+    }, 4000);
 }
 
 function setupListeners() {
+    // --- Cart Toggle ---
     if (dom.openCart) dom.openCart.onclick = () => { dom.cartSidebar.classList.add('open'); dom.cartOverlay.classList.add('open'); };
     if (dom.closeCart) dom.closeCart.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
     if (dom.cartOverlay) dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
 
+    // --- Contact Form ---
     if (dom.contactForm) {
-        dom.contactForm.onsubmit = async (e) => {
-            e.preventDefault(); // PRIMERO DE TODO
-            const btn = dom.contactForm.querySelector('button');
+        console.log("Formulario: Listener cargado.");
+        dom.contactForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log("Formulario: Enviando datos...");
+            const btn = this.querySelector('button');
             const data = {
-                name: new FormData(dom.contactForm).get('name'),
-                email: new FormData(dom.contactForm).get('email'),
-                requirement: dom.contactForm.querySelector('textarea').value,
+                name: new FormData(this).get('name'),
+                email: new FormData(this).get('email'),
+                requirement: this.querySelector('textarea').value,
                 created_at: new Date().toISOString()
             };
 
@@ -222,35 +244,55 @@ function setupListeners() {
             btn.textContent = "ENVIANDO...";
 
             try {
-                if (!supabase) throw new Error("Base de datos no lista");
+                if (!supabase) throw new Error("La base de datos no está conectada.");
+
                 const { error } = await supabase.from('contact_messages').insert([data]);
                 if (error) throw error;
-                showToast("Mensaje enviado con éxito");
-                dom.contactForm.reset();
+
+                console.log("Formulario: Éxito.");
+                showToast("¡Mensaje enviado con éxito!");
+                this.reset();
             } catch (err) {
-                console.error(err);
+                console.error("Formulario Error:", err);
                 showToast("Error: " + err.message);
             } finally {
                 btn.disabled = false;
                 btn.textContent = "ENVIAR MENSAJE";
             }
-        };
+        });
     }
 
+    // --- Checkout ---
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.onclick = async () => {
-            if (cart.length === 0) return showToast("Añade productos");
+            if (cart.length === 0) return showToast("Añade productos al carrito.");
+
             checkoutBtn.disabled = true;
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+
             try {
-                if (supabase) await supabase.from('quotations').insert([{ items: cart, total, created_at: new Date().toISOString() }]);
-                const msg = `Hola MR Confecciones, cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString()}`;
+                if (supabase) {
+                    await supabase.from('quotations').insert([{
+                        items: cart,
+                        total,
+                        created_at: new Date().toISOString()
+                    }]);
+                }
+                const msg = `Hola MR Confecciones, me interesa esta cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
                 window.open(`https://wa.me/569XXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
-            } catch (err) { console.error(err); }
-            checkoutBtn.disabled = false;
+            } catch (err) {
+                console.error("Checkout Error:", err);
+            } finally {
+                checkoutBtn.disabled = false;
+            }
         };
     }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Ensure init runs correctly regardless of when script loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
