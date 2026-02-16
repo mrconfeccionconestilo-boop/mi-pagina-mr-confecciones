@@ -70,9 +70,11 @@ function renderCarousel() {
             <div class="max-w-7xl mx-auto w-full relative z-20">
                 <div class="flex flex-col gap-8 max-w-4xl text-left">
                     <div class="inline-flex items-center gap-2 bg-primary/20 px-5 py-2 rounded-full w-fit border border-primary/30"><span class="text-xs font-bold uppercase tracking-[0.2em] text-primary">${banner.tag}</span></div>
-                    <h1 class="text-4xl lg:text-8xl font-extrabold leading-tight tracking-tighter text-white">${banner.title}</h1>
-                    <p class="text-lg lg:text-xl text-slate-300 max-w-lg font-medium">${banner.subtitle}</p>
-                    <a href="#shop" class="btn-gradient w-fit text-white px-12 py-5 rounded-2xl font-black text-lg shadow-2xl">${banner.btnText}</a>
+                    <h1 class="text-5xl lg:text-8xl font-light leading-tight tracking-tight text-white heading-luxury">
+                        ${banner.title.split(' ').map((word, i) => i === 1 ? `<span class="luxury-text-gradient italic">${word}</span>` : word).join(' ')}
+                    </h1>
+                    <p class="text-lg lg:text-xl text-slate-400 max-w-lg font-light italic leading-relaxed">${banner.subtitle}</p>
+                    <a href="#shop" class="btn-gradient w-fit text-white px-14 py-6 rounded-3xl font-black text-[10px] uppercase tracking-[0.4em] shadow-2xl mt-4">${banner.btnText}</a>
                 </div>
             </div>
         </div>
@@ -95,23 +97,27 @@ function updateCarousel() {
 function renderProducts() {
     if (!dom.productsGrid) return;
     dom.productsGrid.innerHTML = PRODUCTS.map(p => `
-        <div class="glass-card p-6 rounded-[2.5rem] flex flex-col h-full hover:border-primary/50 transition-all duration-700 group">
-            <div class="relative overflow-hidden rounded-[2rem] mb-8 aspect-[4/5] bg-navy-blue product-image-container">
-                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/400x500'">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] shadow-2xl">${p.badge}</span>
+        <div class="glass-card p-6 flex flex-col h-full hover:border-primary/50 transition-all duration-700 group relative">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 blur-[50px] rounded-full group-hover:bg-primary/10 transition-colors"></div>
+            
+            <div class="relative overflow-hidden rounded-[2.5rem] mb-8 aspect-[4/5] image-soft-gradient flex items-center justify-center p-4">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105 group-hover:opacity-100" onerror="this.src='https://via.placeholder.com/400x500'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">${p.badge}</span>
             </div>
-            <div class="flex flex-col flex-grow px-2">
-                <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-3">${p.category}</span>
-                <h3 class="text-2xl font-black mb-3 tracking-tighter luxury-text-gradient">${p.name}</h3>
-                <p class="text-slate-500 text-xs font-medium leading-relaxed line-clamp-2">${p.description}</p>
-                <div class="mt-auto flex items-center justify-between pt-8">
+            
+            <div class="flex flex-col flex-grow px-4">
+                <span class="text-[9px] font-black text-primary uppercase tracking-[0.4em] mb-3 opacity-60">${p.category}</span>
+                <h3 class="text-3xl font-light mb-4 heading-luxury luxury-text-gradient">${p.name}</h3>
+                <p class="text-slate-500 text-xs font-light leading-relaxed mb-8 line-clamp-2 italic">${p.description}</p>
+                
+                <div class="mt-auto flex items-center justify-between pt-8 border-t border-white/5">
                     <div class="flex flex-col">
-                        <span class="text-[8px] font-extrabold text-slate-600 uppercase tracking-widest mb-1">Inversión</span>
-                        <span class="text-2xl font-black tracking-tight">$${p.price.toLocaleString('es-CL')}</span>
+                        <span class="text-[8px] font-black text-slate-600 uppercase tracking-[0.3em] mb-1">Price Tier</span>
+                        <span class="text-2xl font-light heading-luxury">$${p.price.toLocaleString('es-CL')}</span>
                     </div>
-                    <button onclick="addToCart(${p.id})" class="w-14 h-14 bg-white/[0.03] hover:bg-primary text-white rounded-2xl transition-all duration-500 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_30px_rgba(176,93,60,0.3)] group/btn">
-                        <span class="material-symbols-outlined text-2xl transition-transform group-hover/btn:scale-110">add_shopping_cart</span>
+                    <button onclick="addToCart(${p.id})" class="w-16 h-16 bg-white/[0.02] hover:bg-primary text-white rounded-full transition-all duration-700 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_40px_rgba(176,93,60,0.3)] group/btn">
+                        <span class="material-symbols-outlined text-3xl transition-transform group-hover/btn:scale-110">shopping_cart</span>
                     </button>
                 </div>
             </div>

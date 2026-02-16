@@ -8,8 +8,9 @@
     <meta name="description"
         content="Especialistas en la confección de manteles, turbantes y toallas de microfibra premium. Calidad y durabilidad para tu hogar o institución.">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&amp;display=swap"
-        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -44,101 +45,84 @@
         }
     </script>
     <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(176, 93, 60, 0.3);
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .hero-glow {
-            background: radial-gradient(circle at center, rgba(176, 93, 60, 0.1) 0%, transparent 70%);
-        }
-
-        .btn-gradient {
-            background: linear-gradient(135deg, #b05d3c 0%, #8a4329 100%);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-gradient:hover {
-            background: linear-gradient(135deg, #c57451 0%, #b05d3c 100%);
-            box-shadow: 0 10px 30px -10px rgba(176, 93, 60, 0.6);
-            transform: translateY(-2px);
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes rotate-slow {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .rotate-animation {
-            animation: rotate-slow 20s linear infinite;
+        :root {
+            --bronze-glow: rgba(176, 93, 60, 0.15);
+            --gold-glow: rgba(212, 185, 155, 0.1);
         }
 
         body {
             font-family: 'Manrope', sans-serif;
+            background-color: #050505;
             scroll-behavior: smooth;
         }
 
-        #cart-sidebar {
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
+        .heading-luxury {
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.01em;
         }
 
-        #cart-sidebar.open {
-            transform: translateX(0);
+        /* Ambient Glow Blobs */
+        .glow-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: float-glow 25s infinite alternate;
         }
 
-        .cart-overlay {
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 40;
+        @keyframes float-glow {
+            0% {
+                transform: translate(0, 0) scale(1.1);
+            }
+
+            50% {
+                transform: translate(15%, 5%) scale(1);
+            }
+
+            100% {
+                transform: translate(-10%, 15%) scale(1.2);
+            }
         }
 
-        .cart-overlay.open {
-            display: block;
+        .glass-card {
+            background: rgba(15, 15, 15, 0.45);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.8);
+            border-radius: 2.5rem;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(176, 93, 60, 0.4);
+            background: rgba(20, 20, 20, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #b05d3c 0%, #8a4329 100%);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-gradient:hover {
+            box-shadow: 0 15px 40px -10px rgba(176, 93, 60, 0.4);
+            transform: translateY(-2px) scale(1.02);
         }
 
         .nav-scrolled {
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 5, 5, 0.75);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .section-reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(60px);
+            transition: all 1.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .section-reveal.active {
@@ -147,15 +131,23 @@
         }
 
         .luxury-text-gradient {
-            background: linear-gradient(135deg, #fff 0%, #d4b99b 100%);
+            background: linear-gradient(135deg, #fff 0%, #d4b99b 60%, #b05d3c 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        /* Transparent Text Effect - as per image */
+        .text-transparent-glow {
+            font-family: 'Cormorant Garamond', serif;
+            color: rgba(255, 255, 255, 0.08);
+            -webkit-text-stroke: 0.5px rgba(212, 185, 155, 0.2);
+            font-weight: 300;
+        }
+
         /* Custom Scrollbar for a Premium feel */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         ::-webkit-scrollbar-track {
@@ -167,75 +159,75 @@
             border-radius: 10px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d4b99b;
+        .image-soft-gradient {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
         }
 
-        .product-image-container:hover img {
-            transform: scale(1.1);
+        #cart-sidebar {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(100%);
         }
 
-        .input-luxury {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            transition: all 0.3s ease;
+        #cart-sidebar.open {
+            transform: translateX(0);
         }
 
-        .input-luxury:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: #b05d3c;
-            outline: none;
-            box-shadow: 0 0 20px rgba(176, 93, 60, 0.1);
+        .cart-overlay {
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 40;
+        }
+
+        .cart-overlay.open {
+            display: block;
         }
     </style>
 </head>
 
-<body class="bg-background-dark text-white transition-colors duration-300 overflow-x-hidden">
+<body class="bg-[#050505] text-white transition-colors duration-300 overflow-x-hidden">
 
-    <!-- Ambient Background Effects -->
-    <div
-        class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full z-0 pointer-events-none">
+    <!-- Ambient Glowing Backgrounds -->
+    <div class="glow-blob w-[70vw] h-[70vw] bg-primary/10 top-[-20%] left-[-15%]"></div>
+    <div class="glow-blob w-[60vw] h-[60vw] bg-earth-sand/5 bottom-[-10%] right-[-10%]" style="animation-delay: -5s;">
     </div>
-    <div
-        class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-earth-moss/10 blur-[150px] rounded-full z-0 pointer-events-none">
-    </div>
+    <div class="glow-blob w-[50vw] h-[50vw] bg-primary/5 top-[30%] right-[-10%]" style="animation-delay: -12s;"></div>
 
     <div class="relative z-10">
         <!-- Navigation -->
-        <header id="main-header" class="fixed top-0 w-full z-50 transition-all duration-500 px-6 lg:px-20 py-6">
-            <nav class="max-w-7xl mx-auto flex items-center justify-between">
-                <div class="flex items-center gap-4 cursor-pointer group"
+        <header id="main-header" class="fixed top-0 w-full z-50 transition-all duration-700 px-6 lg:px-20 py-10">
+            <nav class="max-w-screen-2xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-6 cursor-pointer group"
                     onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <div
-                        class="w-12 h-12 bg-white rounded-full p-1 flex items-center justify-center shadow-2xl transition-transform duration-700 group-hover:rotate-[360deg]">
+                        class="w-14 h-14 bg-white rounded-full p-1.5 flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-1000 group-hover:rotate-[360deg]">
                         <img src="assets/logo-circular.png" alt="Logo" class="w-full h-full object-contain">
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xl font-black tracking-tighter leading-none luxury-text-gradient">MR
+                        <span
+                            class="text-2xl font-light tracking-[0.15em] leading-none heading-luxury luxury-text-gradient uppercase">MR
                             CONFECCIONES</span>
-                        <span class="text-[8px] font-black uppercase tracking-[0.4em] text-primary">High Quality
-                            Textiles</span>
+                        <span class="text-[9px] font-black uppercase tracking-[0.5em] text-primary/70 mt-1">Textiles de
+                            Alta Gama</span>
                     </div>
                 </div>
 
-                <div class="hidden md:flex items-center gap-10">
+                <div class="hidden md:flex items-center gap-12">
                     <a href="#shop"
-                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Colecciones</a>
+                        class="text-[10px] font-black uppercase tracking-[0.4em] hover:text-primary transition-colors">Colecciones</a>
                     <a href="#about"
-                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Nosotros</a>
+                        class="text-[10px] font-black uppercase tracking-[0.4em] hover:text-primary transition-colors">Nosotros</a>
                     <a href="#contact"
-                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Contacto</a>
+                        class="text-[10px] font-black uppercase tracking-[0.4em] hover:text-primary transition-colors">Contacto</a>
                 </div>
 
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-8">
                     <button id="open-cart" class="relative group">
                         <div
-                            class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[9px] font-black rounded-full flex items-center justify-center shadow-lg">
+                            class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[8px] font-black rounded-full flex items-center justify-center shadow-lg">
                             <span id="cart-count">0</span>
                         </div>
                         <span
-                            class="material-symbols-outlined text-3xl group-hover:text-primary transition-colors">shopping_bag</span>
+                            class="material-symbols-outlined text-4xl group-hover:text-primary transition-colors">shopping_bag</span>
                     </button>
                 </div>
             </nav>
@@ -316,111 +308,123 @@
         </section>
 
         <!-- Shop / Product Grid -->
-        <section id="shop" class="py-32 px-6 lg:px-20 bg-white/[0.02]">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-                    <div class="space-y-4">
-                        <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px]">Catálogo
-                            2026</span>
-                        <h2 class="text-5xl font-black tracking-tighter">NUESTRA <span
-                                class="text-primary">COLECCIÓN</span>
-                        </h2>
-                    </div>
-                    <div class="flex bg-navy-blue p-1.5 rounded-2xl border border-white/5">
-                        <button
-                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl bg-primary text-white">Todos</button>
-                        <button
-                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl hover:text-earth-sand transition-colors">Manteles</button>
-                        <button
-                            class="px-6 py-2 text-xs font-bold uppercase rounded-xl hover:text-earth-sand transition-colors">Microfibra</button>
+        <section id="shop" class="py-32 px-6 lg:px-20 relative">
+            <!-- Section background re-splendor -->
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-primary/5 blur-[150px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
+                    <div class="space-y-6">
+                        <span class="text-primary font-black uppercase tracking-[0.4em] text-[10px] ml-1">Curated
+                            Collections</span>
+                        <h2 class="text-6xl font-light tracking-tight heading-luxury">NUESTRAS <span
+                                class="luxury-text-gradient italic">PIEZAS</span></h2>
                     </div>
                 </div>
-                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
                     <!-- JS dynamic injection -->
                 </div>
             </div>
         </section>
 
-        <!-- About / Value Proposition -->
-        <section id="about" class="py-32 px-6 lg:px-20 overflow-hidden">
-            <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
-                <div
-                    class="w-24 h-24 bg-gradient-to-br from-navy-blue to-primary rounded-[2rem] flex items-center justify-center mb-10 rotate-12 rotate-animation">
-                    <span class="material-symbols-outlined text-5xl text-white">factory</span>
-                </div>
-                <h2 class="text-5xl font-black tracking-tight mb-8">CONFECCIÓN POR <span
-                        class="text-primary italic">EXPERTOS</span></h2>
-                <p class="text-slate-400 text-xl max-w-2xl leading-relaxed mb-16">
-                    En MR Confecciones nos apasiona la excelencia textil. Utilizamos microfibra
-                    certificada y
-                    técnicas de confección reforzada para asegurar que cada producto sea una inversión en durabilidad.
+        <section id="about" class="py-40 px-6 lg:px-20 relative overflow-hidden bg-[#0a0a0a]">
+            <!-- Subtle warm light on background -->
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-primary/5 to-transparent pointer-events-none">
+            </div>
+
+            <!-- Decorative Background Text -->
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0">
+                <span
+                    class="text-[25vw] text-transparent-glow opacity-[0.03] uppercase tracking-[0.2em] whitespace-nowrap">ATELIER</span>
+            </div>
+
+            <div class="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+                <span class="text-primary font-black uppercase tracking-[0.5em] text-[10px] mb-10">Historical
+                    Excellence</span>
+                <h2 class="text-7xl font-light heading-luxury mb-12 leading-tight">HERITAGE & <br> <span
+                        class="italic luxury-text-gradient">CRAFTSMANSHIP</span></h2>
+
+                <p class="text-slate-400 text-xl max-w-2xl leading-relaxed mb-20 font-light italic">
+                    "Elevando el estándar de la confección textil con tecnología y pasión. Hecho a mano, diseñado para
+                    durar y destacar en cada detalle."
                 </p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl mt-20">
-                    <div
-                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
-                        <span class="text-5xl font-black text-earth-sand">100%</span>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl mt-12">
+                    <div class="glass-card p-12 space-y-4 hover:scale-105 transition-all duration-700 group">
+                        <span class="text-6xl font-thin heading-luxury text-earth-sand">100%</span>
                         <p
-                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            class="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
                             Hecho en Chile</p>
                     </div>
                     <div
-                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
-                        <span class="text-5xl font-black text-primary">Micro</span>
-                        <p
-                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
-                            Fibra Premium</p>
+                        class="glass-card p-12 space-y-4 shadow-[0_30px_60px_-15px_rgba(176,92,60,0.2)] scale-110 border-primary/20 bg-primary/[0.02]">
+                        <span class="text-6xl font-thin heading-luxury text-primary italic">Micro</span>
+                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Fibra Premium</p>
                     </div>
-                    <div
-                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
-                        <span class="text-5xl font-black text-white">+500</span>
+                    <div class="glass-card p-12 space-y-4 hover:scale-105 transition-all duration-700 group">
+                        <span class="text-6xl font-thin heading-luxury text-white">500+</span>
                         <p
-                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            class="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
                             Clientes</p>
                     </div>
-                    <div
-                        class="glass-card p-10 rounded-[2.5rem] border-white/5 space-y-3 hover:scale-105 transition-transform duration-500 group">
-                        <span class="text-5xl font-black text-earth-sand">TOP</span>
+                    <div class="glass-card p-12 space-y-4 hover:scale-105 transition-all duration-700 group">
+                        <span class="text-6xl font-thin heading-luxury text-earth-sand">LUX</span>
                         <p
-                            class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
-                            Diseños 2026</p>
+                            class="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-primary transition-colors">
+                            Diseño 2026</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Contact -->
-        <section id="contact" class="py-32 px-6 lg:px-20">
+        <section id="contact" class="py-40 px-6 lg:px-20 relative">
             <div
-                class="max-w-5xl mx-auto glass-card rounded-[3.5rem] p-12 lg:p-24 border-primary/10 relative overflow-hidden text-center">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
-                <h2 class="text-5xl font-black tracking-tight mb-6">¿NECESITAS UNA <span
-                        class="text-primary underline decoration-earth-sand underline-offset-8">COTIZACIÓN?</span></h2>
-                <p class="text-slate-400 text-lg mb-12">Cuéntanos sobre tu pedido institucional o personalizado.</p>
+                class="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-primary/10 blur-[180px] rounded-full pointer-events-none">
+            </div>
 
-                <form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Nombre
-                            Completo</label>
-                        <input name="name" class="w-full input-luxury px-8 py-5 text-white" placeholder="Mauricio R."
-                            type="text" required />
+            <div
+                class="max-w-5xl mx-auto glass-card p-12 lg:p-32 relative overflow-hidden text-center border-white/5 shadow-2xl">
+                <div
+                    class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent">
+                </div>
+
+                <h2 class="text-6xl font-light heading-luxury mb-8">HABLEMOS DE SU <span
+                        class="italic luxury-text-gradient">PROYECTO</span></h2>
+                <p class="text-slate-500 text-lg mb-20 font-light tracking-wide uppercase text-[11px]">Personalización •
+                    Institucional • Exclusividad</p>
+
+                <form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left relative z-10">
+                    <div class="space-y-4 group">
+                        <label
+                            class="text-[9px] font-black uppercase tracking-[0.5em] text-primary/60 ml-6 group-focus-within:text-primary transition-colors">Nombre
+                            de Cliente</label>
+                        <input name="name" class="w-full input-luxury px-8 py-6 text-white text-lg font-light"
+                            placeholder="Mauricio R." type="text" required />
                     </div>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Correo
-                            Electrónico</label>
-                        <input name="email" class="w-full input-luxury px-8 py-5 text-white"
+                    <div class="space-y-4 group">
+                        <label
+                            class="text-[9px] font-black uppercase tracking-[0.5em] text-primary/60 ml-6 group-focus-within:text-primary transition-colors">Digital
+                            Contact</label>
+                        <input name="email" class="w-full input-luxury px-8 py-6 text-white text-lg font-light"
                             placeholder="mr@contacto.cl" type="email" required />
                     </div>
-                    <div class="space-y-3 md:col-span-2">
-                        <label class="text-[10px] font-black uppercase tracking-[0.4em] text-earth-sand/60 ml-4">Tu
+                    <div class="space-y-4 md:col-span-2 group">
+                        <label
+                            class="text-[9px] font-black uppercase tracking-[0.5em] text-primary/60 ml-6 group-focus-within:text-primary transition-colors">Su
                             Requerimiento</label>
                         <textarea name="message"
-                            class="w-full input-luxury px-8 py-6 text-white min-h-[180px] resize-none"
-                            placeholder="Ej: Necesito cotizar 100 manteles personalizados..." required></textarea>
+                            class="w-full input-luxury px-8 py-8 text-white text-lg font-light min-h-[220px] resize-none"
+                            placeholder="Cuéntenos sobre sus necesidades textiles..." required></textarea>
                     </div>
                     <button type="submit"
-                        class="md:col-span-2 btn-gradient text-white font-black py-6 rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-4 text-xs tracking-[0.2em]">
-                        ENVIAR MENSAJE
-                        <span class="material-symbols-outlined uppercase">send</span>
+                        class="md:col-span-2 btn-gradient text-white font-black py-7 rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-6 text-[10px] tracking-[0.5em] uppercase hover:scale-[1.02]">
+                        ENVIAR MENSAJE DIRECTO
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
                     </button>
                 </form>
             </div>
