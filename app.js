@@ -9,6 +9,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const EMAILJS_SERVICE_ID = 'service_cpbelnt';
 const EMAILJS_TEMPLATE_ID = 'template_3uzu4by';
 const EMAILJS_PUBLIC_KEY = 'h95_EWCJMHAz-OBUq';
+const MP_PUBLIC_KEY = 'APP_USR-bf94019e-d379-4f27-a242-0f60177dcddf'; // Clave de Producción de MR Confecciones
+
+// --- INITIALIZATION ---
+let mp = null;
+if (window.MercadoPago) {
+    mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'es-CL' });
+}
 
 const ASSETS = {
     manteleria: "assets/manteleria.png",
@@ -232,14 +239,65 @@ function setupListeners() {
     if (checkoutBtn) {
         checkoutBtn.onclick = async () => {
             if (cart.length === 0) return showToast("Añade productos.");
+
             checkoutBtn.disabled = true;
+            checkoutBtn.textContent = "PROCESANDO...";
+
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const orderData = {
+                items: cart,
+                total,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
+
             try {
-                if (supabaseClient) await supabaseClient.from('quotations').insert([{ items: cart, total, created_at: new Date().toISOString() }]);
-                const msg = `Hola MR Confecciones, cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
-                window.open(`https://wa.me/56998745436?text=${encodeURIComponent(msg)}`, '_blank');
-            } catch (err) { console.error(err); }
-            finally { checkoutBtn.disabled = false; }
+                // 1. Guardar en Supabase para registro
+                let orderId = null;
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient.from('quotations').insert([orderData]).select();
+                    if (data) orderId = data[0].id;
+                }
+
+                // 2. Crear preferencia de Mercado Pago llamando a la Edge Function
+                let preferenceUrl = null;
+                if (supabaseClient) {
+                    try {
+                        // Intentamos invocar incluso si no hay orderId (usamos uno temporal)
+                        const { data: functionData, error: functionError } = await supabaseClient.functions.invoke('create-preference', {
+                            body: { items: cart, orderId: orderId || `TMP-${Date.now()}` }
+                        });
+
+                        if (functionData && functionData.init_point) {
+                            preferenceUrl = functionData.init_point;
+                        } else {
+                            console.error("No se recibió init_point:", functionData, functionError);
+                        }
+                    } catch (fErr) {
+                        console.error("Error al invocar Edge Function:", fErr);
+                    }
+                }
+
+                if (preferenceUrl) {
+                    showToast("Redirigiendo a Mercado Pago...");
+                    setTimeout(() => {
+                        window.location.href = preferenceUrl;
+                    }, 1500);
+                } else {
+                    // Respaldo de WhatsApp si falla la función (usamos location.href para evitar bloqueos)
+                    showToast("Enviando orden vía WhatsApp...");
+                    const msg = `Hola MR Confecciones, pedido #${orderId || 'NUEVO'}:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
+                    setTimeout(() => {
+                        window.location.href = `https://wa.me/56998745436?text=${encodeURIComponent(msg)}`;
+                    }, 1500);
+                }
+
+            } catch (err) {
+                console.error(err);
+                showToast("Error al procesar. Intenta nuevamente.");
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = "PROCEDER AL PAGO";
+            }
         };
     }
     // Scroll Header Effect
