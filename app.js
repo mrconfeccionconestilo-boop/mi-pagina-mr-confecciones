@@ -1,5 +1,5 @@
 /* =============================================
-   MR CONFECCIONES — Logic v2.0 (Official)
+   MR CONFECCIONES — Logic v2.1 (Security Fix)
    ============================================= */
 
 // --- CONFIGURATION ---
@@ -50,13 +50,13 @@ const PRODUCTS = [
 // --- Global State ---
 let cart = JSON.parse(localStorage.getItem('mr_confecciones_cart_real')) || [];
 let currentSlide = 0;
-let supabase = null;
+let supabaseClient = null; // Renamed to avoid syntax collision
 let dom = {};
 
 // --- Core Functions ---
 
 function init() {
-    console.log("MR Confecciones: Iniciando aplicación...");
+    console.log("MR Confecciones: Aplicación cargada.");
 
     // Initializing DOM references
     dom = {
@@ -78,10 +78,11 @@ function init() {
 
     // Initializing Supabase
     if (window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log("Supabase: Cliente conectado.");
+        // Use the global SDK to create the client
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("Supabase: Inicializado correctamente.");
     } else {
-        console.error("Supabase: SDK no encontrado en el navegador.");
+        console.warn("Supabase: SDK no encontrado, asegúrate de tener internet.");
     }
 
     renderCarousel();
@@ -226,17 +227,17 @@ function setupListeners() {
 
     // --- Contact Form ---
     if (dom.contactForm) {
-        console.log("Formulario: Listener cargado.");
-        dom.contactForm.addEventListener('submit', async function (e) {
+        console.log("Formulario: Listo.");
+        dom.contactForm.onsubmit = async (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            console.log("Formulario: Enviando datos...");
-            const btn = this.querySelector('button');
+            console.log("Formulario: Iniciando envío...");
+            const btn = dom.contactForm.querySelector('button');
             const data = {
-                name: new FormData(this).get('name'),
-                email: new FormData(this).get('email'),
-                requirement: this.querySelector('textarea').value,
+                name: new FormData(dom.contactForm).get('name'),
+                email: new FormData(dom.contactForm).get('email'),
+                requirement: dom.contactForm.querySelector('textarea').value,
                 created_at: new Date().toISOString()
             };
 
@@ -244,14 +245,14 @@ function setupListeners() {
             btn.textContent = "ENVIANDO...";
 
             try {
-                if (!supabase) throw new Error("La base de datos no está conectada.");
+                if (!supabaseClient) throw new Error("Base de datos desconectada.");
 
-                const { error } = await supabase.from('contact_messages').insert([data]);
+                const { error } = await supabaseClient.from('contact_messages').insert([data]);
                 if (error) throw error;
 
-                console.log("Formulario: Éxito.");
+                console.log("Formulario: Éxito total.");
                 showToast("¡Mensaje enviado con éxito!");
-                this.reset();
+                dom.contactForm.reset();
             } catch (err) {
                 console.error("Formulario Error:", err);
                 showToast("Error: " + err.message);
@@ -259,27 +260,28 @@ function setupListeners() {
                 btn.disabled = false;
                 btn.textContent = "ENVIAR MENSAJE";
             }
-        });
+            return false;
+        };
     }
 
     // --- Checkout ---
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.onclick = async () => {
-            if (cart.length === 0) return showToast("Añade productos al carrito.");
+            if (cart.length === 0) return showToast("Añade productos.");
 
             checkoutBtn.disabled = true;
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
 
             try {
-                if (supabase) {
-                    await supabase.from('quotations').insert([{
+                if (supabaseClient) {
+                    await supabaseClient.from('quotations').insert([{
                         items: cart,
                         total,
                         created_at: new Date().toISOString()
                     }]);
                 }
-                const msg = `Hola MR Confecciones, me interesa esta cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
+                const msg = `Hola MR Confecciones, cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
                 window.open(`https://wa.me/569XXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
             } catch (err) {
                 console.error("Checkout Error:", err);
@@ -290,7 +292,7 @@ function setupListeners() {
     }
 }
 
-// Ensure init runs correctly regardless of when script loads
+// Start application
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
