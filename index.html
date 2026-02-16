@@ -27,14 +27,14 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#9a4c2e",      /* Terracota/Arcilla */
-                        "earth-sand": "#c5a386",   /* Arena/Beige */
-                        "earth-moss": "#5d6d4f",   /* Verde Musgo */
-                        "navy-blue": "#2d241e",    /* Café Oscuro Profundo (replaces navy) */
-                        "cyan-accent": "#c5a386",  /* Sand (replaces cyan as accent) */
-                        "background-dark": "#1c1614", /* Un tono más claro que el anterior (#120d0b) */
-                        "glass": "rgba(255, 248, 240, 0.02)",
-                        "glass-border": "rgba(255, 248, 240, 0.08)",
+                        "primary": "#b05d3c",      /* Terracota más vibrante y premium */
+                        "earth-sand": "#d4b99b",   /* Champagne/Arena suave */
+                        "earth-moss": "#7a8a68",   /* Verde Musgo refinado */
+                        "navy-blue": "#0c0a09",    /* Negro Carbón Profundo */
+                        "cyan-accent": "#d4b99b",  /* Sand Accent */
+                        "background-dark": "#050505", /* Negro absoluto para máximo contraste */
+                        "glass": "rgba(255, 255, 255, 0.02)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
                     },
                     fontFamily: {
                         "display": ["Manrope", "sans-serif"]
@@ -45,14 +45,49 @@
     </script>
     <style>
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(176, 93, 60, 0.3);
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .hero-glow {
-            background: radial-gradient(circle at center, rgba(154, 76, 46, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle at center, rgba(176, 93, 60, 0.1) 0%, transparent 70%);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #b05d3c 0%, #8a4329 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #c57451 0%, #b05d3c 100%);
+            box-shadow: 0 10px 30px -10px rgba(176, 93, 60, 0.6);
+            transform: translateY(-2px);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
         }
 
         @keyframes rotate-slow {
@@ -94,13 +129,9 @@
         }
 
         .nav-scrolled {
-            background: rgba(28, 22, 20, 0.98);
+            background: rgba(5, 5, 5, 0.98);
             backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-gradient {
-            background: linear-gradient(135deg, #9a4c2e 0%, #c5a386 100%);
         }
     </style>
 </head>
