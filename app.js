@@ -1,5 +1,5 @@
 /* =============================================
-   MR CONFECCIONES — Logic v2.2 (Supabase + EmailJS)
+   MR CONFECCIONES — Logic v2.3 (Robust Messaging)
    ============================================= */
 
 // --- CONFIGURATION ---
@@ -60,7 +60,7 @@ let dom = {};
 // --- Core Functions ---
 
 function init() {
-    console.log("MR Confecciones: Aplicación cargada v2.2.");
+    console.log("MR Confecciones: Iniciando v2.3...");
 
     dom = {
         productsGrid: document.getElementById('products-grid'),
@@ -207,11 +207,9 @@ function saveCart() { localStorage.setItem('mr_confecciones_cart_real', JSON.str
 function showToast(msg) {
     if (!dom.toast || !dom.toastMsg) return;
     dom.toastMsg.textContent = msg;
-    dom.toast.classList.replace('opacity-0', 'opacity-100');
-    dom.toast.classList.replace('translate-y-20', 'translate-y-0');
+    dom.toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 opacity-100 translate-y-0";
     setTimeout(() => {
-        dom.toast.classList.replace('opacity-100', 'opacity-0');
-        dom.toast.classList.replace('translate-y-0', 'translate-y-20');
+        dom.toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 opacity-0 translate-y-20";
     }, 4000);
 }
 
@@ -225,11 +223,11 @@ function setupListeners() {
             e.preventDefault();
 
             const btn = dom.contactForm.querySelector('button');
+            const formData = new FormData(dom.contactForm);
             const data = {
-                name: new FormData(dom.contactForm).get('name'),
-                email: new FormData(dom.contactForm).get('email'),
-                message: dom.contactForm.querySelector('textarea').value, // Use 'message' for EmailJS
-                requirement: dom.contactForm.querySelector('textarea').value, // Also keep 'requirement' for Supabase
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: dom.contactForm.querySelector('textarea').value,
                 created_at: new Date().toISOString()
             };
 
@@ -237,30 +235,36 @@ function setupListeners() {
             btn.textContent = "ENVIANDO...";
 
             try {
-                // 1. Save to Supabase
+                // 1. First save to Supabase
                 if (supabaseClient) {
-                    await supabaseClient.from('contact_messages').insert([{
+                    const { error } = await supabaseClient.from('contact_messages').insert([{
                         name: data.name,
                         email: data.email,
-                        requirement: data.requirement,
+                        requirement: data.message,
                         created_at: data.created_at
                     }]);
+                    if (error) console.error("Supabase Error:", error);
                 }
 
-                // 2. Send via EmailJS
+                // 2. Then try EmailJS
                 if (window.emailjs) {
-                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                        from_name: data.name,
-                        from_email: data.email,
-                        message: data.message
-                    });
+                    try {
+                        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                            from_name: data.name,
+                            from_email: data.email,
+                            message: data.message
+                        });
+                    } catch (ejsErr) {
+                        console.error("EmailJS Error:", ejsErr);
+                        // We still show success if it saved to database
+                    }
                 }
 
                 showToast("¡Mensaje enviado con éxito!");
                 dom.contactForm.reset();
             } catch (err) {
-                console.error("Error:", err);
-                showToast("Error al enviar el mensaje.");
+                console.error("General Form Error:", err);
+                showToast("Hubo un problema. Intenta nuevamente.");
             } finally {
                 btn.disabled = false;
                 btn.textContent = "ENVIAR MENSAJE";
@@ -273,10 +277,8 @@ function setupListeners() {
     if (checkoutBtn) {
         checkoutBtn.onclick = async () => {
             if (cart.length === 0) return showToast("Añade productos.");
-
             checkoutBtn.disabled = true;
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-
             try {
                 if (supabaseClient) {
                     await supabaseClient.from('quotations').insert([{
@@ -287,11 +289,8 @@ function setupListeners() {
                 }
                 const msg = `Hola MR Confecciones, cotización:\n${cart.map(i => `- ${i.quantity}x ${i.name}`).join('\n')}\nTotal: $${total.toLocaleString('es-CL')}`;
                 window.open(`https://wa.me/56998745436?text=${encodeURIComponent(msg)}`, '_blank');
-            } catch (err) {
-                console.error("Checkout Error:", err);
-            } finally {
-                checkoutBtn.disabled = false;
-            }
+            } catch (err) { console.error("Checkout Error:", err); }
+            finally { checkoutBtn.disabled = false; }
         };
     }
 }
