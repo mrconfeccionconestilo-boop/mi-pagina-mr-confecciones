@@ -129,9 +129,28 @@
         }
 
         .nav-scrolled {
-            background: rgba(5, 5, 5, 0.98);
-            backdrop-filter: blur(15px);
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .luxury-text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #d4b99b 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -148,36 +167,39 @@
 
     <div class="relative z-10">
         <!-- Navigation -->
-        <header
-            class="sticky top-0 z-50 transition-all duration-300 px-6 lg:px-20 py-6 bg-background-dark/30 backdrop-blur-sm"
-            id="main-header">
+        <header id="main-header" class="fixed top-0 w-full z-50 transition-all duration-500 px-6 lg:px-20 py-6">
             <nav class="max-w-7xl mx-auto flex items-center justify-between">
-                <div class="flex items-center gap-4 cursor-pointer"
+                <div class="flex items-center gap-4 cursor-pointer group"
                     onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                     <div
-                        class="w-14 h-14 bg-white rounded-full p-1 flex items-center justify-center overflow-hidden shadow-lg border-2 border-primary/30">
-                        <img src="assets/logo-circular.png" alt="MR Logo" class="w-full h-full object-contain"
-                            onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=MR'">
+                        class="w-12 h-12 bg-white rounded-full p-1 flex items-center justify-center shadow-2xl transition-transform duration-700 group-hover:rotate-[360deg]">
+                        <img src="assets/logo-circular.png" alt="Logo" class="w-full h-full object-contain">
                     </div>
-                    <div class="flex flex-col -gap-1">
-                        <h2 class="text-white text-xl font-extrabold tracking-tighter leading-none">MR</h2>
-                        <span class="text-[10px] font-bold tracking-widest text-primary uppercase">Confecciones</span>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-black tracking-tighter leading-none luxury-text-gradient">MR
+                            CONFECCIONES</span>
+                        <span class="text-[8px] font-black uppercase tracking-[0.4em] text-primary">High Quality
+                            Textiles</span>
                     </div>
                 </div>
+
                 <div class="hidden md:flex items-center gap-10">
-                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
-                        href="#shop">Colecciones</a>
-                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
-                        href="#about">Experiencia</a>
-                    <a class="text-xs font-bold uppercase tracking-widest hover:text-earth-sand transition-colors"
-                        href="#contact">Cotizar</a>
+                    <a href="#shop"
+                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Colecciones</a>
+                    <a href="#about"
+                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Nosotros</a>
+                    <a href="#contact"
+                        class="text-[10px] font-black uppercase tracking-[0.3em] hover:text-primary transition-colors">Contacto</a>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button id="open-cart"
-                        class="relative p-2.5 hover:bg-white/10 rounded-full transition-all border border-white/5">
-                        <span class="material-symbols-outlined text-2xl">shopping_bag</span>
-                        <span id="cart-count"
-                            class="absolute top-1 right-1 w-4 h-4 bg-primary text-[10px] flex items-center justify-center rounded-full text-white font-bold">0</span>
+
+                <div class="flex items-center gap-6">
+                    <button id="open-cart" class="relative group">
+                        <div
+                            class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[9px] font-black rounded-full flex items-center justify-center shadow-lg">
+                            <span id="cart-count">0</span>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-3xl group-hover:text-primary transition-colors">shopping_bag</span>
                     </button>
                 </div>
             </nav>
@@ -265,7 +287,8 @@
                         <span class="text-primary font-black uppercase tracking-[0.3em] text-[10px]">Catálogo
                             2026</span>
                         <h2 class="text-5xl font-black tracking-tighter">NUESTRA <span
-                                class="text-primary">COLECCIÓN</span></h2>
+                                class="text-primary">COLECCIÓN</span>
+                        </h2>
                     </div>
                     <div class="flex bg-navy-blue p-1.5 rounded-2xl border border-white/5">
                         <button

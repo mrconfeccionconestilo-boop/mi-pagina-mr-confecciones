@@ -208,6 +208,32 @@ function setupListeners() {
             finally { checkoutBtn.disabled = false; }
         };
     }
+    // Scroll Header Effect
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('main-header');
+        if (window.scrollY > 50) {
+            header.classList.add('nav-scrolled', 'py-4');
+            header.classList.remove('py-6');
+        } else {
+            header.classList.remove('nav-scrolled', 'py-4');
+            header.classList.add('py-6');
+        }
+    });
+
+    // Reveal Animations
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => {
+        section.classList.add('section-reveal');
+        observer.observe(section);
+    });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
