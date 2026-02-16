@@ -7,9 +7,8 @@
  * Edit this section to change the hero banners and product images
  */
 // --- SUPABASE CONFIGURATION ---
-// User should replace these with their own project details
-const SUPABASE_URL = 'https://your-project-url.supabase.co'; // REPLACE ME
-const SUPABASE_ANON_KEY = 'your-anon-key'; // REPLACE ME
+const SUPABASE_URL = 'https://mrcroztqbiwytkcbbfsq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_k8IlAa0At4sErxRQ6FUhdQ_hrvM0pzY';
 let supabase = null;
 
 if (SUPABASE_URL !== 'https://your-project-url.supabase.co') {
