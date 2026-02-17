@@ -38,12 +38,14 @@ const DESIGNER_CONFIG = {
     ]
 };
 
-const PRODUCTS = [
-    { id: 1, name: "Mantel Antimanchas Premium", description: "Alta gama con tratamiento antimanchas.", price: 15990, category: "Mantelería", badge: "DESTACADO", badgeClass: "bg-primary", image: ASSETS.manteleria },
-    { id: 2, name: "Turbante Microfibra Pro", description: "Secado ultra-rápido sin daño capilar.", price: 7500, category: "Turbantes", badge: "NUEVO", badgeClass: "bg-earth-sand", image: ASSETS.turbante },
-    { id: 3, name: "Telas Naranja Premium", description: "Resistencia y suavidad garantizada.", price: 9990, category: "Telas", badge: "BEST SELLER", badgeClass: "bg-earth-moss", image: ASSETS.telas },
-    { id: 4, name: "Poncho Microfibra", description: "Ideal para playa o piscina. Máxima comodidad.", price: 14500, category: "Protección", badge: "PROMO", badgeClass: "bg-primary", image: ASSETS.poncho }
+const CATEGORIES = [
+    { id: 'toallas', name: "TOALLAS LUXURY", description: "Microfibra de alto rendimiento para el cuidado personal y deportivo.", image: ASSETS.turbante, tag: "Best Seller", pattern: 'Toalla' },
+    { id: 'manteles', name: "MANTELERÍA GALA", description: "Tejidos exclusivos antimanchas para una mesa impecable.", image: ASSETS.manteleria, tag: "Exclusivo", pattern: 'Mantel' },
+    { id: 'telas', name: "TELAS PREMIUM", description: "Materia prima de la mejor calidad para tus proyectos.", image: ASSETS.telas, tag: "Insumos", pattern: 'Tela' },
+    { id: 'ponchos', name: "COLECCIÓN PONCHOS", description: "Comodidad y estilo para tus momentos de relajo.", image: ASSETS.poncho, tag: "Nuevo", pattern: 'Poncho' }
 ];
+
+let allErpProducts = []; // Para guardar todos los productos reales del ERP
 
 let cart = JSON.parse(localStorage.getItem('mr_confecciones_cart_real')) || [];
 let currentSlide = 0;
@@ -66,7 +68,12 @@ function init() {
         toastMsg: document.getElementById('toast-msg'),
         contactForm: document.getElementById('contact-form'),
         slides: document.getElementById('carousel-slides'),
-        dots: document.getElementById('carousel-dots')
+        dots: document.getElementById('carousel-dots'),
+        categoryModal: document.getElementById('category-modal'),
+        categoryOverlay: document.getElementById('category-overlay'),
+        catModalTitle: document.getElementById('cat-modal-title'),
+        catModalItems: document.getElementById('cat-modal-items'),
+        closeCategory: document.getElementById('close-category')
     };
 
     if (window.supabase) {
@@ -76,7 +83,7 @@ function init() {
 
     syncERPInventory(); // Sincronizar al iniciar
     renderCarousel();
-    renderProducts(); // Renderizar inmediatamente con datos locales
+    renderCategories(); // Renderizar inmediatamente
     updateCartUI();
     setupListeners();
 
@@ -90,21 +97,20 @@ async function syncERPInventory() {
     try {
         const { data, error } = await erpClient
             .from('productos')
-            .select('code, stock, total'); // total es el precio bruto en el ERP
+            .select('code, name, stock, total');
 
         if (error) throw error;
 
-        // Actualizar nuestro array local de productos con datos del ERP
-        PRODUCTS.forEach(p => {
-            const erpData = data.find(item => item.code === `TO-${String(p.id).padStart(2, '0')}` || item.code === p.id);
-            if (erpData) {
-                p.price = erpData.total || p.price;
-                p.stock = erpData.stock !== undefined ? erpData.stock : 10;
-            }
-        });
+        allErpProducts = data.map(p => ({
+            id: p.code,
+            name: p.name,
+            price: p.total || 0,
+            stock: p.stock || 0,
+            image: ASSETS.logo
+        }));
 
-        console.log('Inventario sincronizado con ERP');
-        renderProducts();
+        console.log('Inventario sincronizado con ERP:', allErpProducts.length);
+        renderCategories();
     } catch (error) {
         console.error('Error sincronizando con ERP:', error);
     }
@@ -142,47 +148,85 @@ function updateCarousel() {
     }
 }
 
-function renderProducts() {
+function renderCategories() {
     if (!dom.productsGrid) return;
-    dom.productsGrid.innerHTML = PRODUCTS.map(p => {
-        const isOutOfStock = p.stock <= 0;
-        return `
-        <div class="glass-card p-6 flex flex-col h-full hover:border-primary/50 transition-all duration-700 group relative">
+    dom.productsGrid.innerHTML = CATEGORIES.map(cat => `
+        <div onclick="openCategory('${cat.id}')" class="glass-card p-6 flex flex-col h-full hover:border-primary/50 transition-all duration-700 group cursor-pointer relative">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 blur-[50px] rounded-full group-hover:bg-primary/10 transition-colors"></div>
             
-            <div class="relative overflow-hidden rounded-[2.5rem] mb-8 aspect-[4/5] image-soft-gradient flex items-center justify-center p-4">
-                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105 group-hover:opacity-100" onerror="this.src='https://via.placeholder.com/400x500'">
+            <div class="relative overflow-hidden rounded-[40px] mb-8 aspect-[4/5] image-soft-gradient flex items-center justify-center p-4">
+                <img src="${cat.image}" alt="${cat.name}" class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105 group-hover:opacity-100" onerror="this.src='https://via.placeholder.com/400x500'">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                ${isOutOfStock ? `
-                    <span class="absolute top-6 left-6 bg-red-500 text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">AGOTADO</span>
-                ` : `
-                    <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">${p.badge}</span>
-                `}
+                <span class="absolute top-6 left-6 bg-primary text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">${cat.tag}</span>
             </div>
             
             <div class="flex flex-col flex-grow px-4">
-                <span class="text-[9px] font-black text-primary uppercase tracking-[0.4em] mb-3 opacity-60">${p.category}</span>
-                <h3 class="text-3xl font-light mb-4 heading-luxury luxury-text-gradient">${p.name}</h3>
-                <p class="text-slate-500 text-xs font-light leading-relaxed mb-8 line-clamp-2 italic">${p.description}</p>
+                <span class="text-[9px] font-black text-primary uppercase tracking-[0.4em] mb-3 opacity-60">Colección</span>
+                <h3 class="text-3xl font-light mb-4 heading-luxury luxury-text-gradient">${cat.name}</h3>
+                <p class="text-slate-500 text-xs font-light leading-relaxed mb-8 line-clamp-2 italic">${cat.description}</p>
                 
                 <div class="mt-auto flex items-center justify-between pt-8 border-t border-white/5">
-                    <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-slate-600 uppercase tracking-[0.3em] mb-1">Price Tier</span>
-                        <span class="text-2xl font-light heading-luxury">$${p.price.toLocaleString('es-CL')}</span>
-                        ${!isOutOfStock && p.stock <= 3 ? `<p class="text-orange-500 text-xs mt-2 font-bold italic">¡SOLO QUEDAN ${p.stock}!</p>` : ''}
+                    <span class="text-[8px] font-black text-slate-600 uppercase tracking-[0.3em]">Explorar Variedad</span>
+                    <div class="w-14 h-14 bg-white/[0.02] group-hover:bg-primary text-white rounded-full transition-all duration-700 flex items-center justify-center border border-white/5 group-hover:border-primary">
+                        <span class="material-symbols-outlined text-2xl group-hover:rotate-45 transition-transform">arrow_outward</span>
                     </div>
-                    <button onclick="addToCart(${p.id})" class="w-16 h-16 bg-white/[0.02] hover:bg-primary text-white rounded-full transition-all duration-700 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_40px_rgba(176,93,60,0.3)] group/btn" ${isOutOfStock ? 'disabled' : ''}>
-                        <span class="material-symbols-outlined text-3xl transition-transform group-hover/btn:scale-110">${isOutOfStock ? 'block' : 'shopping_cart'}</span>
-                    </button>
                 </div>
             </div>
         </div>
-    `;
-    }).join('');
+    `).join('');
+}
+
+window.openCategory = (catId) => {
+    const cat = CATEGORIES.find(c => c.id === catId);
+    if (!cat) return;
+
+    dom.catModalTitle.textContent = cat.name;
+
+    // Filtrar productos del ERP que coincidan con el patrón de la categoría
+    const variants = allErpProducts.filter(p =>
+        p.name.toLowerCase().includes(cat.pattern.toLowerCase()) ||
+        p.id.toLowerCase().startsWith(cat.id.substring(0, 2).toLowerCase())
+    );
+
+    dom.catModalItems.innerHTML = variants.length > 0 ? variants.map(v => {
+        const outOfStock = v.stock <= 0;
+        return `
+            <div class="group flex items-center justify-between p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all duration-500">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-navy-blue flex items-center justify-center border border-white/5">
+                        <span class="material-symbols-outlined text-primary/40">texture</span>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-light heading-luxury text-white/90">${v.name}</h4>
+                        <div class="flex items-center gap-4 mt-1">
+                            <span class="text-primary font-black italic">$${v.price.toLocaleString('es-CL')}</span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest ${outOfStock ? 'text-red-500' : 'text-slate-500'}">
+                                ${outOfStock ? 'AGOTADO' : `${v.stock} DISPONIBLES`}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addToCart('${v.id}')" 
+                    ${outOfStock ? 'disabled' : ''}
+                    class="w-14 h-14 flex items-center justify-center rounded-full transition-all ${outOfStock ? 'bg-white/5 opacity-20' : 'bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20'}">
+                    <span class="material-symbols-outlined">${outOfStock ? 'block' : 'add_shopping_cart'}</span>
+                </button>
+            </div>
+        `;
+    }).join('') : `<p class="text-center py-20 text-slate-500 italic">No se encontraron productos disponibles para esta categoría.</p>`;
+
+    // Mostrar modal
+    dom.categoryOverlay.classList.remove('opacity-0', 'pointer-events-none');
+    dom.categoryModal.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+};
+
+function closeCategoryModal() {
+    dom.categoryOverlay.classList.add('opacity-0', 'pointer-events-none');
+    dom.categoryModal.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
 }
 
 window.addToCart = (id) => {
-    const p = PRODUCTS.find(x => x.id === id);
+    const p = allErpProducts.find(x => x.id === id);
     if (!p) return;
 
     if (p.stock <= 0) {
@@ -255,6 +299,9 @@ function setupListeners() {
     if (dom.openCart) dom.openCart.onclick = () => { dom.cartSidebar.classList.add('open'); dom.cartOverlay.classList.add('open'); };
     if (dom.closeCart) dom.closeCart.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
     if (dom.cartOverlay) dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.remove('open'); dom.cartOverlay.classList.remove('open'); };
+
+    if (dom.closeCategory) dom.closeCategory.onclick = closeCategoryModal;
+    if (dom.categoryOverlay) dom.categoryOverlay.onclick = closeCategoryModal;
 
     if (dom.contactForm) {
         dom.contactForm.onsubmit = async (e) => {
