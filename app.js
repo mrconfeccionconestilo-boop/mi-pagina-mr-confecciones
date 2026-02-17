@@ -11,6 +11,11 @@ const EMAILJS_TEMPLATE_ID = 'template_3uzu4by';
 const EMAILJS_PUBLIC_KEY = 'h95_EWCJMHAz-OBUq';
 const MP_PUBLIC_KEY = 'APP_USR-bf94019e-d379-4f27-a242-0f60177dcddf'; // Clave de Producción de MR Confecciones
 
+// --- ERP INTEGRATION ---
+const ERP_URL = 'https://vsvaasnddphjlspukpca.supabase.co';
+const ERP_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzdmFhc25kZHBoamxzcHVrcGNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MjA5MjEsImV4cCI6MjA4NDA5NjkyMX0.vvGuBV0Kkh_WhPM5Tpcb-H00hWp5VN1Nh_5oUALXGfU';
+let erpClient = null;
+
 // --- INITIALIZATION ---
 let mp = null;
 if (window.MercadoPago) {
@@ -64,8 +69,18 @@ function init() {
         dots: document.getElementById('carousel-dots')
     };
 
-    if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    renderCarousel(); renderProducts(); updateCartUI(); setupListeners();
+    if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        erpClient = window.supabase.createClient(ERP_URL, ERP_KEY);
+    }
+
+    syncERPInventory(); // Sincronizar al iniciar
+    renderCarousel();
+    updateCartIcon();
+    setupListeners();
+
+    // Sincronizar cada 5 minutos
+    setInterval(syncERPInventory, 5 * 60 * 1000);
     setInterval(nextSlide, 6000);
 }
 
@@ -103,14 +118,20 @@ function updateCarousel() {
 
 function renderProducts() {
     if (!dom.productsGrid) return;
-    dom.productsGrid.innerHTML = PRODUCTS.map(p => `
+    dom.productsGrid.innerHTML = PRODUCTS.map(p => {
+        const isOutOfStock = p.stock <= 0;
+        return `
         <div class="glass-card p-6 flex flex-col h-full hover:border-primary/50 transition-all duration-700 group relative">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 blur-[50px] rounded-full group-hover:bg-primary/10 transition-colors"></div>
             
             <div class="relative overflow-hidden rounded-[2.5rem] mb-8 aspect-[4/5] image-soft-gradient flex items-center justify-center p-4">
                 <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105 group-hover:opacity-100" onerror="this.src='https://via.placeholder.com/400x500'">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">${p.badge}</span>
+                ${isOutOfStock ? `
+                    <span class="absolute top-6 left-6 bg-red-500 text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">AGOTADO</span>
+                ` : `
+                    <span class="absolute top-6 left-6 ${p.badgeClass} text-white text-[8px] font-black px-4 py-2 rounded-full uppercase tracking-[0.3em] shadow-2xl backdrop-blur-md">${p.badge}</span>
+                `}
             </div>
             
             <div class="flex flex-col flex-grow px-4">
@@ -122,20 +143,37 @@ function renderProducts() {
                     <div class="flex flex-col">
                         <span class="text-[8px] font-black text-slate-600 uppercase tracking-[0.3em] mb-1">Price Tier</span>
                         <span class="text-2xl font-light heading-luxury">$${p.price.toLocaleString('es-CL')}</span>
+                        ${!isOutOfStock && p.stock <= 3 ? `<p class="text-orange-500 text-xs mt-2 font-bold italic">¡SOLO QUEDAN ${p.stock}!</p>` : ''}
                     </div>
-                    <button onclick="addToCart(${p.id})" class="w-16 h-16 bg-white/[0.02] hover:bg-primary text-white rounded-full transition-all duration-700 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_40px_rgba(176,93,60,0.3)] group/btn">
-                        <span class="material-symbols-outlined text-3xl transition-transform group-hover/btn:scale-110">shopping_cart</span>
+                    <button onclick="addToCart(${p.id})" class="w-16 h-16 bg-white/[0.02] hover:bg-primary text-white rounded-full transition-all duration-700 flex items-center justify-center border border-white/5 hover:border-primary hover:shadow-[0_0_40px_rgba(176,93,60,0.3)] group/btn" ${isOutOfStock ? 'disabled' : ''}>
+                        <span class="material-symbols-outlined text-3xl transition-transform group-hover/btn:scale-110">${isOutOfStock ? 'block' : 'shopping_cart'}</span>
                     </button>
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 window.addToCart = (id) => {
     const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+
+    if (p.stock <= 0) {
+        showToast("Lo sentimos, este producto está agotado.");
+        return;
+    }
+
     const item = cart.find(x => x.id === id);
-    if (item) item.quantity++; else cart.push({ ...p, quantity: 1 });
+    if (item) {
+        if (item.quantity >= p.stock) {
+            showToast(`Solo quedan ${p.stock} unidades disponibles de ${p.name}.`);
+            return;
+        }
+        item.quantity++;
+    } else {
+        cart.push({ ...p, quantity: 1 });
+    }
     saveCart(); updateCartUI(); showToast(`${p.name} añadido`);
 };
 
