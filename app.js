@@ -76,12 +76,38 @@ function init() {
 
     syncERPInventory(); // Sincronizar al iniciar
     renderCarousel();
-    updateCartIcon();
+    renderProducts(); // Renderizar inmediatamente con datos locales
+    updateCartUI();
     setupListeners();
 
     // Sincronizar cada 5 minutos
     setInterval(syncERPInventory, 5 * 60 * 1000);
     setInterval(nextSlide, 6000);
+}
+
+async function syncERPInventory() {
+    if (!erpClient) return;
+    try {
+        const { data, error } = await erpClient
+            .from('productos')
+            .select('code, stock, total'); // total es el precio bruto en el ERP
+
+        if (error) throw error;
+
+        // Actualizar nuestro array local de productos con datos del ERP
+        PRODUCTS.forEach(p => {
+            const erpData = data.find(item => item.code === `TO-${String(p.id).padStart(2, '0')}` || item.code === p.id);
+            if (erpData) {
+                p.price = erpData.total || p.price;
+                p.stock = erpData.stock !== undefined ? erpData.stock : 10;
+            }
+        });
+
+        console.log('Inventario sincronizado con ERP');
+        renderProducts();
+    } catch (error) {
+        console.error('Error sincronizando con ERP:', error);
+    }
 }
 
 function renderCarousel() {
